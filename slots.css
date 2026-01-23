@@ -1,0 +1,56 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  padding: 20px;
+}
+
+.counters {
+  display: flex;
+  gap: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 80px);
+  gap: 12px;
+}
+
+/* SLOT BASE */
+.slot {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 80px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+/* STATUS COLORS */
+.slot.available {
+  background-color: green;
+}
+
+.slot.reserved {
+  background-color: red;
+}
+
+.slot.occupied {
+  background-color: purple;
+}
+
+.slot.selected {
+  outline: 3px solid blue;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
