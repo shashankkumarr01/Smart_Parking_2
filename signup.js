@@ -1,25 +1,28 @@
-let users = JSON.parse(localStorage.getItem("mockUsers") || "[]");
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-const signupForm = document.getElementById("signup-form");
-const errorMsg = document.getElementById("error-msg");
+const db = getDatabase();
 
-signupForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+function signup() {
+  const role = document.getElementById("role").value; // staff or student
+  const userId = document.getElementById("userid").value;
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const role = document.getElementById("role").value;
+  if (role === "staff") {
+    const staffRef = ref(db, "staff_ids/" + userId);
 
-  if(users.find(u => u.email === email)){
-    errorMsg.innerText = "Email already exists!";
-    return;
+    get(staffRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        // ✅ Valid staff
+        alert("Staff verified. Signup successful!");
+        // continue signup process
+      } else {
+        // ❌ Invalid staff
+        alert("Invalid Staff ID. Access denied.");
+      }
+    });
+  } else {
+    // student signup (no verification needed)
+    alert("Student signup successful!");
   }
+}
 
-  const uid = Date.now();
-  users.push({ uid, name, email, password, role });
-  localStorage.setItem("mockUsers", JSON.stringify(users));
-
-  alert("Signup successful! Please login.");
-  window.location.href = "login.html";
-});
+  
