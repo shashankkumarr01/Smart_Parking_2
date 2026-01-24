@@ -1,20 +1,16 @@
-// Mock users database
-let users = JSON.parse(localStorage.getItem("mockUsers") || "[]");
-
-const loginForm = document.getElementById("login-form");
-const errorMsg = document.getElementById("error-msg");
-
-loginForm.addEventListener("submit", (e) => {
+document.getElementById("login-form").addEventListener("submit", function (e) {
   e.preventDefault();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
 
-  const user = users.find(u => u.email === email && u.password === password);
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("error-msg");
 
-  if(user){
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
-    window.location.href = "slots.html";
+  // demo credentials
+  if (email === "admin@gmail.com" && password === "1234") {
+    errorMsg.innerText = "";
+    alert("Login successful");
+    // window.location.href = "dashboard.html";
   } else {
-    errorMsg.innerText = "Invalid email or password!";
+    errorMsg.innerText = "Invalid email or password";
   }
 });
