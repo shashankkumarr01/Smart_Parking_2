@@ -2,24 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Smart Parking Slots</title>
-  <link rel="stylesheet" href="slots.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Parking - Login</title>
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
-<center>
-  <div class="counters">
-    <div>Total Slots: <span id="total-slots">0</span></div>
-    <div>Available: <span id="available-slots">0</span></div>
-    <div>Reserved: <span id="reserved-slots">0</span></div>
-    <div>Occupied: <span id="occupied-slots">0</span></div>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="email" placeholder="Email" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="signup.html">Signup here</a></p>
+    <p id="error-msg" class="error"></p>
   </div>
 
-  <div id="parking-lot" class="grid-container"></div>
-
-  <button id="reserve-btn" style="display:none;">
-    Reserve Selected Slot
-  </button>
-</center>
-  <script src="slots.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>
