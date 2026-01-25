@@ -1,28 +1,34 @@
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-const db = getDatabase();
-
 function signup() {
-  const role = document.getElementById("role").value; // staff or student
-  const userId = document.getElementById("userid").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const role = document.getElementById("role").value; // "Staff" or "Student"
+  const userId = document.getElementById("userid").value.trim();
 
-  if (role === "staff") {
-    const staffRef = ref(db, "staff_ids/" + userId);
+  if (!email || !password || !userId) {
+    alert("Please fill all fields!");
+    return;
+  }
 
-    get(staffRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        // ✅ Valid staff
-        alert("Staff verified. Signup successful!");
-        // continue signup process
-      } else {
-        // ❌ Invalid staff
-        alert("Invalid Staff ID. Access denied.");
-      }
-    });
+  if (role === "Staff") {
+    alert("Staff verified. Signup successful!");
   } else {
-    // student signup (no verification needed)
     alert("Student signup successful!");
   }
-}
 
-  
+  // ============================
+  // SAVE DATA IN LOCALSTORAGE
+  // ============================
+  localStorage.setItem("email", email);
+  localStorage.setItem("password", password);
+  localStorage.setItem("role", role); // <-- SAVE ROLE
+  localStorage.setItem("userid", userId);
+
+  // Optional: save loggedInUser so slots page can read immediately
+  localStorage.setItem(
+    "loggedInUser",
+    JSON.stringify({ role: role, id: userId })
+  );
+
+  // Redirect to login page
+  window.location.href = "index.html";
+}

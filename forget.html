@@ -5,6 +5,7 @@
   <title>Forgot Password</title>
 </head>
 <body>
+  <center>
   <h2>Forgot Password</h2>
 
   <input type="email" id="resetEmail" placeholder="Enter your email" required>
@@ -12,7 +13,7 @@
   <button onclick="resetPassword()">Reset Password</button>
 
   <p id="msg"></p>
-
+  </center>
   <script>
     function resetPassword() {
       const email = document.getElementById("resetEmail").value;
@@ -23,6 +24,7 @@
           "Password reset link sent to " + email;
       }
     }
+    
   </script>
 </body>
 </html>

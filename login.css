@@ -59,3 +59,15 @@ body {
   margin-top: 10px;
   font-size: 14px;
 }
+.forgot-link {
+  display: block;
+  margin-top: 10px;     /* space below button */
+  font-size: 14px;      /* smaller text */
+  text-align: center;
+  text-decoration: none;
+  color: #007bff;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
