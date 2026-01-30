@@ -2,54 +2,53 @@
 // SHOW / HIDE STAFF ID
 // =====================
 function toggleStaffId() {
-  const role = document.getElementById("role").value;
-  const staffInput = document.getElementById("userid");
-
-  if (role === "staff") {
-    staffInput.style.display = "block";
-  } else {
-    staffInput.style.display = "none";
-    staffInput.value = "";
-  }
+  const role = document.getElementById("role");
+  const userid = document.getElementById("userid");
+  if (!role || !userid) return;
+  userid.style.display = role.value === "staff" ? "block" : "none";
+  if (role.value !== "staff") userid.value = "";
 }
 
 // Run when page loads
-window.onload = function () {
+window.addEventListener("DOMContentLoaded", () => {
   toggleStaffId();
-};
+});
 
 // =====================
 // SIGNUP FUNCTION
 // =====================
 function signup() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const confirmPassword = document.getElementById("confirmPassword").value.trim();
+  const form = document.getElementById("signup-form");
+  const errorMsg = document.getElementById("error-msg");
+  const email = document.getElementById("email")?.value.trim() || "";
+  const password = document.getElementById("password")?.value || "";
+  const confirm = document.getElementById("confirm")?.value || "";
+  const role = document.getElementById("role")?.value || "";
 
+  errorMsg.textContent = "";
 
-  const role = document.getElementById("role").value;   // student / staff
-  const userId = document.getElementById("userid").value.trim();
-  const errorMsg =document.getElementById("error-msg");
-   errorMsg.innerText="";
-  // Validation
-  if (!email || !password ||!confirmpassword) {
-    errorMsg.innerText="Please fill email and password!";
+  if (!email) {
+    errorMsg.textContent = "Please enter an email.";
     return;
   }
-if (password !== confirmPassword) {
-  errorMsg.innerText="Passwords do not match!";
-  return;
-}
-  if (role === "staff" && userId === "") {
-    errorMsg.innerText="Please enter Staff ID!";
+  if (password.length < 6) {
+    errorMsg.textContent = "Password must be at least 6 characters.";
     return;
   }
-  if(role==="staff"&& userId===""){
-    errorMsg.InnerText="Please enter Staff ID!"
+  if (password !== confirm) {
+    errorMsg.textContent = "Passwords do not match.";
+    return;
+  }
+  if (role === "staff") {
+    const userid = document.getElementById("userid")?.value.trim() || "";
+    if (!userid) {
+      errorMsg.textContent = "Please enter Staff ID.";
+      return;
+    }
   }
 
   // Messages
-  if (role === "staff" ) {
+  if (role === "staff") {
     alert("Staff verified. Signup successful!");
   } else {
     alert("Student signup successful!");
