@@ -7,9 +7,20 @@ body {
   align-items: center;
   height: 100vh;
 }
+body {
+  background: linear-gradient(-45deg, #74ebd5, #acb6e5, #ff9a9e, #fad0c4);
+  background-size: 400% 400%;
+  animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
 .login-container {
-  background-color: white;
+  background-color:rgb(162,219,237);
   padding: 30px;
   border-radius: 10px;
   width: 350px;
@@ -33,7 +44,7 @@ body {
 .login-container button {
   width: 95%;
   padding: 10px;
-  background-color: #4CAF50;
+  background-color:#e865cc;
   border: none;
   color: white;
   font-size: 16px;
@@ -43,12 +54,12 @@ body {
 }
 
 .login-container button:hover {
-  background-color: #45a049;
+  background-color: #a0459e;
 }
 
 .login-container a {
   text-decoration: none;
-  color: #007bff;
+  color: #cc67d9;
 }
 
 .login-container a:hover {

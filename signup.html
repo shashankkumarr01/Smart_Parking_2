@@ -10,16 +10,18 @@
   <div class="login-container">
     <h2>Signup</h2>
     <form id="signup-form">
-      <input type="text" id="name" placeholder="Full Name" required><br>
+      
       <input type="email" id="email" placeholder="Email" required><br>
       <input type="password" id="password" placeholder="Password" required><br>
-      <select id="role">
-  <option value="student">Student</option>
-  <option value="staff">Staff</option>
-</select>
+      <input type="password" id="Confirm" placeholder="Confirm Password" required><br>
+      <select id="role" onchange="toggleStaffId()">
+           
+      <option value="student">Student</option>
+      <option value="staff">Staff</option>
+       </select>
 
-<input type="text" id="userid" placeholder="Enter Staff ID or Student ID">
-<button onclick="signup()">Signup</button>
+<input type="text" id="userid" placeholder="Enter Staff ID " style="display:none;">
+<button type="button "onclick="signup()">Signup</button>
       
     </form>
     <p style="font-size: 14px;">
