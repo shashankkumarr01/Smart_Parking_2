@@ -1,3 +1,4 @@
+console.log("slots.js loaded");
 const RESERVATION_TIME = 10 * 60; // seconds (10 minutes)
 // -----------------------------
 // USER ROLE
@@ -61,11 +62,14 @@ function updateCounts() {
 
 
 
-updateCounts();
 
 // -----------------------------
 // RESERVE SLOT (STAFF ONLY)
-// -----------------------------
+// -----------------------------updateCounts();
+function isAnySlotReserved() {
+  return document.querySelector(".slot[data-status='reserved']") !== null;
+}
+
 function reserveSelectedSlot() {
 
   if (userRole !== "staff") {
@@ -78,6 +82,12 @@ function reserveSelectedSlot() {
     return;
   }
 
+  // ✅ CHECK FIRST (before loading)
+  if (document.querySelector(".slot[data-status='reserved']")) {
+    alert("Only one slot can be reserved at a time");
+    return;
+  }
+
   const loading = document.getElementById("loading");
   const btn = document.querySelector(".reserve-main-btn");
 
@@ -85,44 +95,45 @@ function reserveSelectedSlot() {
   btn.disabled = true;
 
   setTimeout(() => {
-  let timeLeft = RESERVATION_TIME;
+    let timeLeft = RESERVATION_TIME;
 
-  selectedSlot.dataset.status = "reserved";
-  selectedSlot.classList.remove("selected");
-  selectedSlot.classList.add("reserved");
+    selectedSlot.dataset.status = "reserved";
+    selectedSlot.classList.remove("selected");
+    selectedSlot.classList.add("reserved");
 
-  const slot = selectedSlot;
-  selectedSlot = null;
-  updateCounts();
+    const slot = selectedSlot;
+    selectedSlot = null;
+    updateCounts();
 
-  const countdown = setInterval(() => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
+    const countdown = setInterval(() => {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
 
-    slot.innerHTML = `
-  <div class="reserved-label">RESERVED</div>
-  <div class="timer-text">
-    ${minutes}:${seconds.toString().padStart(2, "0")}
-  </div>
-`;
+      slot.innerHTML = `
+        <div class="reserved-label">RESERVED</div>
+        <div class="timer-text">
+          ${minutes}:${seconds.toString().padStart(2, "0")}
+        </div>
+      `;
 
+      timeLeft--;
 
-    timeLeft--;
+      if (timeLeft < 0) {
+        clearInterval(countdown);
+        slot.dataset.status = "available";
+        slot.classList.remove("reserved");
+        slot.innerText = slot.dataset.slotNumber;
+        updateCounts();
+      }
+    }, 1000);
 
-    if (timeLeft < 0) {
-      clearInterval(countdown);
-      slot.dataset.status = "available";
-      slot.classList.remove("reserved");
-      slot.innerText = slot.dataset.slotNumber;
+    loading.classList.add("hidden");
+    btn.disabled = false;
 
-      updateCounts();
-    }
-  }, 1000);
-
-  loading.classList.add("hidden");
-  btn.disabled = false;
-}, 500);
+  }, 500);
 }
+
+
 
 
 // -----------------------------
@@ -132,7 +143,9 @@ if (userRole !== "staff") {
   const btn = document.querySelector(".reserve-main-btn");
   if (btn) btn.style.display = "none";
 }
+a
 
+loadSlotCounts();
 // -----------------------------
 // LOGOUT
 // -----------------------------
