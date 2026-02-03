@@ -1,26 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Parking - Login</title>
-  <link rel="stylesheet" href="login.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking System - College</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <div class="login-container">
-    <h2>Login</h2>
-    <form id="login-form">
-      <input type="email" id="email" placeholder="Email" required><br>
-      <input type="password" id="password" placeholder="Password" required><br>
-      <button type="submit">Login</button><br>
+    <div id="dashboard-page" class="page">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="icon-circle small">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div>
+                            <h1>Smart Parking System</h1>
+                            <p>Real-time parking management</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-info">
+                            <div class="user-details">
+                                <div class="user-name-row">
+                                    <i class="fas fa-user"></i>
+                                    <span id="user-name"></span>
+                                    <span class="badge" id="user-badge"></span>
+                                </div>
+                                <p id="user-email"></p>
+                            </div>
+                        </div>
+                        <span id="user-name"></span>
+                        <button onclick="window.location.href='login.html'">Login</button>
 
-      <a href="forget.html" class="forgot-link">Forgot password</a>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-    </form>
-    <p>Don't have an account? <a href="signup.html">Signup here</a></p>
-    <p id="error-msg" class="error"></p>
-  </div>
+        <div class="container dashboard-content">
+            <!-- College Banner -->
+            <div class="college-banner">
+                <img src="https://images.unsplash.com/photo-1673609218895-bb331f054e7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsZWdlJTIwY2FtcHVzJTIwYnVpbGRpbmd8ZW58MXx8fHwxNzcwMDkyMTY1fDA&ixlib=rb-4.1.0&q=80&w=1080" alt="College Campus">
+                <div class="banner-overlay">
+                    <h2>Welcome to Campus Parking</h2>
+                    <p>Find and manage your parking spot with ease</p>
+                </div>
+            </div>
+             <div class="stats-grid">
+                <div class="stat-card available">
+                    <div class="stat-header">
+                        <span>Available</span>
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value" id="available-count">0</div>
+                    <div class="stat-label">Ready to park</div>
+                </div>
+                <div class="stat-card occupied">
+                    <div class="stat-header">
+                        <span>Occupied</span>
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-value" id="occupied-count">0</div>
+                    <div class="stat-label">Currently in use</div>
+                </div>
+                <div class="stat-card reserved">
+                    <div class="stat-header">
+                        <span>Reserved </span>
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="stat-value" id="reserved-count">0</div>
+                    <div class="stat-label">Pre-booked</div>
+                </div>
+            </div><script>
+document.addEventListener("DOMContentLoaded", function () {
 
-  <script src="login.js"></script>
-</body>
-</html>
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+  if (user) {
+    document.getElementById("user-name").innerText = user.id;
+  } else {
+    document.getElementById("user-name").innerText = "Guest";
+  }
+
+});
+</script>
+    <script src="index.js"></script>
+    

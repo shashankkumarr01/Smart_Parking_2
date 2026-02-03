@@ -17,36 +17,27 @@
     Reserved: <span id="reserved-slots">0</span>
     &nbsp; | &nbsp;
     Occupied Slots: <span id="occupied-slots">0</span>
-    &nbsp; | &nbsp;
   </div>
 
   <div class="exit-label">↑ EXIT</div>
 
-<div id="parkingLot" class="parking-lot"></div>
+  <!-- ✅ REQUIRED -->
+  <div id="parkingLot" class="parking-lot"></div>
 
-<div class="entry-label">↑ ENTRY</div>
+  <div class="entry-label">↑ ENTRY</div>
 
+  <div id="loading" class="loading hidden">
+    ⏳ Reserving slot...
+  </div>
 
+  <button class="reserve-main-btn" onclick="reserveSelectedSlot()">
+    Reserve Selected Slot
+  </button>
 
-<div class="map-link"> 
-  📍 <a 
-    href="https://maps.app.goo.gl/uWkxtEWHusvfxVGH8"
-    target="_blank">
-    View Parking Location on Google Maps
-  </a>
-</div>
-<br>
-<div id="loading" class="loading hidden">
-  ⏳ Reserving slot...
-</div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
 
-<button class="reserve-main-btn" onclick="reserveSelectedSlot()">
-  Reserve Selected Slot
-</button>
-
-<button class="logout-btn" onclick="logout()">Logout</button>
-
-
+  <!-- ✅ SCRIPT MUST BE LAST -->
   <script src="slots.js"></script>
+
 </body>
 </html>
