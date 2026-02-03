@@ -2,23 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Smart Parking Slots</title>
+  <title>Smart Parking System</title>
   <link rel="stylesheet" href="slots.css">
 </head>
 <body>
 
-  <div class="counters">
-    <div>Total Slots: <span id="total-slots"></span></div>
-    <div>Available: <span id="available-slots"></span></div>
-    <div>Reserved: <span id="reserved-slots"></span></div>
-    <div>Occupied: <span id="occupied-slots"></span></div>
+  <h1 class="title">Smart Parking System</h1>
+
+  <div class="status-bar">
+    Total Slots: <span id="total-slots">0</span>
+    &nbsp; | &nbsp;
+    Available: <span id="available-slots">0</span>
+    &nbsp; | &nbsp;
+    Reserved: <span id="reserved-slots">0</span>
+    &nbsp; | &nbsp;
+    Occupied Slots: <span id="occupied-slots">0</span>
+    &nbsp; | &nbsp;
   </div>
 
-  <div id="parking-lot" class="grid-container"></div>
-  <center>
+  <div class="exit-label">↑ EXIT</div>
 
-  <button id="reserve-btn">Reserve Slot</button>
-</center>
+<div id="parkingLot" class="parking-lot"></div>
+
+<div class="entry-label">↑ ENTRY</div>
+
+
+
+<div class="map-link"> 
+  📍 <a 
+    href="https://maps.app.goo.gl/uWkxtEWHusvfxVGH8"
+    target="_blank">
+    View Parking Location on Google Maps
+  </a>
+</div>
+<br>
+<div id="loading" class="loading hidden">
+  ⏳ Reserving slot...
+</div>
+
+<button class="reserve-main-btn" onclick="reserveSelectedSlot()">
+  Reserve Selected Slot
+</button>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+
   <script src="slots.js"></script>
 </body>
 </html>

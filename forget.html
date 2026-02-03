@@ -33,12 +33,16 @@
       text-align: center;
     }
 
-    h2 {
+    .container button:hover {
+  color: #a0459e;
+}
+
+    .container h2 {
       margin-bottom: 20px;
       color: #333;
     }
 
-    input {
+    .container input {
       width: 90%;
       padding: 10px;
       margin: 10px 0;
@@ -46,7 +50,7 @@
       border: 1px solid #ccc;
     }
 
-    button {
+    .container button {
       width: 95%;
       padding: 10px;
       background-color: #e865cc;
@@ -58,9 +62,22 @@
       margin-top: 10px;
     }
 
-    button:hover {
+    .container button:hover {
       background-color: #a0459e;
     }
+
+    .login-link {
+  display: block;
+  margin-top: 10px;     /* space below button */
+  font-size: 14px;      /* smaller text */
+  text-align: center;
+  text-decoration: none;
+  color: #e96ed2;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
 
     #msg {
       margin-top: 15px;
@@ -82,7 +99,9 @@
 
     <input type="email" id="resetEmail" placeholder="Enter your email">
     <br>
-    <button onclick="resetPassword()">Reset Password</button>
+    <button onclick="resetPassword()">Reset Password</button><br>
+    <br>
+    <a href="index.html" class="login-link">Login here</a>
 
     <p id="msg"></p>
   </div>
