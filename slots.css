@@ -166,7 +166,39 @@ body {
 .hidden {
   display: none;
 }
+/* ---------- MOBILE RESPONSIVE ---------- */
+@media (max-width: 768px) {
 
+  body {
+    padding: 10px;
+  }
+
+  .parking-lot {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .slot {
+    width: 80px;
+    height: 80px;
+    font-size: 18px;
+  }
+
+  .status-bar {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .reserve-main-btn,
+  .logout-btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  iframe {
+    height: 200px;
+  }
+}
 
 /* ANIMATIONS */
 @keyframes popIn{

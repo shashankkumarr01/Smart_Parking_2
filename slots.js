@@ -1,31 +1,40 @@
 console.log("slots.js loaded");
-console.log("slots.js running");
+const storage = sessionStorage;
+
+
 // -----------------------------
 // CURRENT USER
 // -----------------------------
 const currentUser = JSON.parse(localStorage.getItem("user"));
-let userHasReserved = false;   // track current user's reservation
-const reserveBtn = document.getElementById("reserveBtn");
 
-if (!currentUser || currentUser.role !== "staff") {
+if (!currentUser) {
+  alert("Please login first");
+  window.location.href = "login.html";
+}
+
+// -----------------------------
+// ROLE CHECK
+// -----------------------------
+const reserveBtn = document.querySelector(".reserve-main-btn");
+const loading = document.getElementById("loading");
+
+if (currentUser.role !== "staff" && reserveBtn) {
   reserveBtn.style.display = "none";
 }
+
 // -----------------------------
 // CONFIG
 // -----------------------------
 const totalSlots = 5;
 const RESERVATION_TIME = 10 * 60;
 
+// one-user-one-slot key
+const userKey = "reservedSlot_" + currentUser.email;
+
 // -----------------------------
 // ELEMENTS
 // -----------------------------
 const parkingLot = document.getElementById("parkingLot");
-
-if (!parkingLot) {
-  console.error("❌ parkingLot not found");
-  throw new Error("parkingLot missing");
-}
-
 let selectedSlot = null;
 
 // -----------------------------
@@ -49,13 +58,10 @@ for (let i = 1; i <= totalSlots; i++) {
   parkingLot.appendChild(slot);
 }
 
-updateCounts();
-
 // -----------------------------
 // UPDATE COUNTS
 // -----------------------------
 function updateCounts() {
-
   const slots = document.querySelectorAll(".slot");
   let reserved = 0;
 
@@ -65,66 +71,67 @@ function updateCounts() {
 
   const total = slots.length;
   const available = total - reserved;
-  const occupied = 0;
 
-  // Update slots.html numbers
   document.getElementById("total-slots").innerText = total;
   document.getElementById("reserved-slots").innerText = reserved;
   document.getElementById("available-slots").innerText = available;
-  document.getElementById("occupied-slots").innerText = occupied;
+  document.getElementById("occupied-slots").innerText = 0;
 
-  // ✅ SAVE FOR INDEX PAGE
-  localStorage.setItem("dashboardCounts", JSON.stringify({
-    
-    reserved:reserved,
-    available:available,
-    occupied:occupied
-  }));
+  localStorage.setItem(
+    "dashboardCounts",
+    JSON.stringify({ total, reserved, available, occupied: 0 })
+  );
 }
-console.log("Counts saved:",reserved,occupied);
+
+updateCounts();
 
 // -----------------------------
 // RESERVE SLOT
 // -----------------------------
 function reserveSelectedSlot() {
 
-  if (!currentUser || currentUser.role !== "staff") {
+  // Only staff can reserve
+  if (currentUser.role !== "staff") {
     alert("Only staff can reserve slots");
     return;
   }
 
-  if (userHasReserved) {
-    alert("You already reserved one slot");
+  // Check if user already reserved a slot this session
+  if (sessionStorage.getItem(userKey)) {
+    alert("You already reserved one slot this session");
     return;
   }
 
+  // Check if a slot is selected
   if (!selectedSlot) {
     alert("Select a slot first");
     return;
   }
 
-  // ✅ SHOW LOADING
-  document.getElementById("loading").classList.remove("hidden");
+  // SHOW LOADING
+  loading.classList.remove("hidden");
+  reserveBtn.disabled = true;
 
-  // ⏳ Simulate backend delay
   setTimeout(() => {
-
-    document.getElementById("loading").classList.add("hidden");
-
     let timeLeft = RESERVATION_TIME;
     const slot = selectedSlot;
     selectedSlot = null;
 
+    // Save user reservation in sessionStorage
+    sessionStorage.setItem(userKey, slot.dataset.slotNumber);
+
+    // Mark slot as reserved
     slot.dataset.status = "reserved";
     slot.classList.add("reserved");
     slot.classList.remove("selected");
 
-    userHasReserved = true;
-
     updateCounts();
 
-    const timer = setInterval(() => {
+    loading.classList.add("hidden");
+    reserveBtn.disabled = false;
 
+    // Start countdown timer
+    const timer = setInterval(() => {
       const min = Math.floor(timeLeft / 60);
       const sec = timeLeft % 60;
 
@@ -138,17 +145,18 @@ function reserveSelectedSlot() {
       if (timeLeft < 0) {
         clearInterval(timer);
 
+        // Free user and slot after timer ends
+        sessionStorage.removeItem(userKey);
+
         slot.dataset.status = "available";
         slot.classList.remove("reserved");
         slot.innerText = slot.dataset.slotNumber;
 
-        userHasReserved = false;
         updateCounts();
       }
-
     }, 1000);
 
-  }, 1500); // 1.5 sec fake backend delay
+  }, 1200); // simulate backend delay
 }
 
 
@@ -156,5 +164,6 @@ function reserveSelectedSlot() {
 // LOGOUT
 // -----------------------------
 function logout() {
+  localStorage.clear();
   window.location.href = "index.html";
 }
