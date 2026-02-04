@@ -23,45 +23,74 @@
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+.container {
+  background-color: rgb(255, 255, 255/ 0.005); /* lower opacity */
+  padding: 40px; /* reduced padding = less height */
+  border-radius: 10px;
+  width: 700px;
+  max-height: 1000px; /* control height */
+  box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+  text-align: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
 
-    .container {
-      background-color: rgb(162, 219, 237);
-      padding: 30px;
-      width: 350px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-      text-align: center;
-    }
+    
+    .container button:hover {
+  color: #a0459e;
+}
 
-    h2 {
+    .container h1 {
       margin-bottom: 20px;
       color: #333;
     }
 
-    input {
+    .container input {
       width: 90%;
-      padding: 10px;
+      padding: 20px;
       margin: 10px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 28px;
     }
 
-    button {
-      width: 95%;
-      padding: 10px;
+    .container button {
+      width: 90%;
+      padding: 20px;
       background-color: #e865cc;
       border: none;
       color: white;
-      font-size: 16px;
+      font-size: 28px;
       border-radius: 5px;
       cursor: pointer;
       margin-top: 10px;
     }
 
-    button:hover {
+    .container button:hover {
       background-color: #a0459e;
     }
 
+    .login-link {
+  display: block;
+  margin-top: 15px;     /* space below button */
+  font-size: 24px;      /* smaller text */
+  text-align: center;
+  text-decoration: none;
+  color: #e96ed2;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+body {
+  background-image: url("gce.jpeg");  /* path to your image */
+  background-size: cover;       /* fills screen */
+  background-position: center;  
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* optional */
+
+  animation: gradientBG 70s ease infinite;
+}
     #msg {
       margin-top: 15px;
       font-size: 14px;
@@ -78,11 +107,13 @@
 
   <!-- HTML -->
   <div class="container">
-    <h2>Forgot Password</h2>
+    <h1>Forgot Password</h1>
 
     <input type="email" id="resetEmail" placeholder="Enter your email">
     <br>
-    <button onclick="resetPassword()">Reset Password</button>
+    <button onclick="resetPassword()">Reset Password</button><br>
+    <br>
+    <a href="index.html" class="login-link">Login here</a>
 
     <p id="msg"></p>
   </div>
