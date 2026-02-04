@@ -7,31 +7,36 @@ body {
   height: 100vh;
 }
 
+
 .login-container {
-  background-color: rgb(162, 219, 237);
-  padding: 30px;
+  background-color: rgb(255, 255, 255/ 0.005); /* lower opacity */
+  padding: 10px; /* reduced padding = less height */
   border-radius: 10px;
-  width: 350px;
+  width: 250px;
+  min-height: 10px; /* control height */
   box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
   text-align: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
+
 .login-container h2 {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #333;
 }
 
 .login-container input {
-  width: 90%;
-  padding: 10px;
+  width: 70%;
+  padding: 5px;
   margin: 10px 0;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
 .login-container button {
-  width: 95%;
-  padding: 10px;
+  width: 75%;
+  padding: 7px;
   background-color: #e865cc;
   border: none;
   color: white;
@@ -86,4 +91,13 @@ body {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+body {
+  background-image: url("gce.jpeg");  /* path to your image */
+  background-size: cover;       /* fills screen */
+  background-position: center;  
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* optional */
+
+  animation: gradientBG 70s ease infinite;
 }

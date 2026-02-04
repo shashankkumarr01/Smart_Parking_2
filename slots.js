@@ -1,137 +1,169 @@
-document.addEventListener("DOMContentLoaded", () => {
+console.log("slots.js loaded");
+const storage = sessionStorage;
 
-  // =======================
-  // USER (SIMULATED LOGIN)
-  // =======================
-  /*
-    Change role to "Student" to test student view
-  */
-  if (!localStorage.getItem("loggedInUser")) {
-    localStorage.setItem(
-      "loggedInUser",
-      JSON.stringify({ role: "Staff" })
-    );
-  }
 
-  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+// -----------------------------
+// CURRENT USER
+// -----------------------------
+const currentUser = JSON.parse(localStorage.getItem("user"));
 
-  // =======================
-  // DOM ELEMENTS
-  // =======================
-  const parkingLot = document.getElementById("parking-lot");
-  const reserveBtn = document.getElementById("reserve-btn");
+if (!currentUser) {
+  alert("Please login first");
+  window.location.href = "login.html";
+}
 
-  const totalSlotsEl = document.getElementById("total-slots");
-  const availableSlotsEl = document.getElementById("available-slots");
-  const reservedSlotsEl = document.getElementById("reserved-slots");
-  const occupiedSlotsEl = document.getElementById("occupied-slots");
+// -----------------------------
+// ROLE CHECK
+// -----------------------------
+const reserveBtn = document.querySelector(".reserve-main-btn");
+const loading = document.getElementById("loading");
 
-  // =======================
-  // STATE
-  // =======================
-  const TOTAL_SLOTS = 5;
-  let slots = {};
-  let selectedSlot = null;
+if (currentUser.role !== "staff" && reserveBtn) {
+  reserveBtn.style.display = "none";
+}
 
-  // =======================
-  // HIDE BUTTON FOR STUDENT
-  // =======================
-  if (!user || user.role !== "Staff") {
-    reserveBtn.style.display = "none";
-  }
+// -----------------------------
+// CONFIG
+// -----------------------------
+const totalSlots = 5;
+const RESERVATION_TIME = 10 * 60;
 
-  // =======================
-  // CREATE SLOTS
-  // =======================
-  for (let i = 1; i <= TOTAL_SLOTS; i++) {
-    const slotId = "slot-" + i;
+// one-user-one-slot key
+const userKey = "reservedSlot_" + currentUser.email;
 
-    slots[slotId] = { status: "available" };
+// -----------------------------
+// ELEMENTS
+// -----------------------------
+const parkingLot = document.getElementById("parkingLot");
+let selectedSlot = null;
 
-    const div = document.createElement("div");
-    div.id = slotId;
-    div.innerText = i;
-    div.className = "slot available";
+// -----------------------------
+// CREATE SLOTS
+// -----------------------------
+for (let i = 1; i <= totalSlots; i++) {
+  const slot = document.createElement("div");
+  slot.className = "slot";
+  slot.dataset.status = "available";
+  slot.dataset.slotNumber = i;
+  slot.innerText = i;
 
-    div.addEventListener("click", () => {
-      if (slots[slotId].status !== "available") return;
+  slot.onclick = () => {
+    if (slot.dataset.status === "reserved") return;
 
-      if (selectedSlot) {
-        selectedSlot.classList.remove("selected");
-      }
-
-      selectedSlot = div;
-      div.classList.add("selected");
-    });
-
-    parkingLot.appendChild(div);
-  }
-
-  // =======================
-  // STAFF RESERVATION ONLY
-  // =======================
-  reserveBtn.addEventListener("click", () => {
-
-    if (!user || user.role !== "Staff") {
-      alert("Only staff can reserve slots!");
-      return;
-    }
-
-    if (!selectedSlot) {
-      alert("Select an available slot first!");
-      return;
-    }
-
-    const slotId = selectedSlot.id;
-
-    slots[slotId].status = "reserved";
-    selectedSlot.className = "slot reserved";
-    selectedSlot.classList.remove("selected");
-    selectedSlot = null;
-
-    updateCounters();
-
-    // AUTO RELEASE AFTER 10 MINUTES
-    setTimeout(() => {
-      if (slots[slotId].status === "reserved") {
-        slots[slotId].status = "available";
-        document.getElementById(slotId).className = "slot available";
-        updateCounters();
-      }
-    }, 600000);
-  });
-
-  // =======================
-  // SENSOR FUNCTION (FUTURE)
-  // =======================
-  window.setSlotOccupied = function (slotNumber) {
-    const slotId = "slot-" + slotNumber;
-    if (!slots[slotId]) return;
-
-    slots[slotId].status = "occupied";
-    document.getElementById(slotId).className = "slot occupied";
-    updateCounters();
+    document.querySelectorAll(".slot").forEach(s => s.classList.remove("selected"));
+    selectedSlot = slot;
+    slot.classList.add("selected");
   };
 
-  // =======================
-  // UPDATE COUNTERS
-  // =======================
-  function updateCounters() {
-    let available = 0;
-    let reserved = 0;
-    let occupied = 0;
+  parkingLot.appendChild(slot);
+}
 
-    for (let key in slots) {
-      if (slots[key].status === "available") available++;
-      else if (slots[key].status === "reserved") reserved++;
-      else if (slots[key].status === "occupied") occupied++;
-    }
+// -----------------------------
+// UPDATE COUNTS
+// -----------------------------
+function updateCounts() {
+  const slots = document.querySelectorAll(".slot");
+  let reserved = 0;
 
-    totalSlotsEl.innerText = TOTAL_SLOTS;
-    availableSlotsEl.innerText = available;
-    reservedSlotsEl.innerText = reserved;
-    occupiedSlotsEl.innerText = occupied;
+  slots.forEach(s => {
+    if (s.dataset.status === "reserved") reserved++;
+  });
+
+  const total = slots.length;
+  const available = total - reserved;
+
+  document.getElementById("total-slots").innerText = total;
+  document.getElementById("reserved-slots").innerText = reserved;
+  document.getElementById("available-slots").innerText = available;
+  document.getElementById("occupied-slots").innerText = 0;
+
+  localStorage.setItem(
+    "dashboardCounts",
+    JSON.stringify({ total, reserved, available, occupied: 0 })
+  );
+}
+
+updateCounts();
+
+// -----------------------------
+// RESERVE SLOT
+// -----------------------------
+function reserveSelectedSlot() {
+
+  // Only staff can reserve
+  if (currentUser.role !== "staff") {
+    alert("Only staff can reserve slots");
+    return;
   }
 
-  updateCounters();
-});
+  // Check if user already reserved a slot this session
+  if (sessionStorage.getItem(userKey)) {
+    alert("You already reserved one slot this session");
+    return;
+  }
+
+  // Check if a slot is selected
+  if (!selectedSlot) {
+    alert("Select a slot first");
+    return;
+  }
+
+  // SHOW LOADING
+  loading.classList.remove("hidden");
+  reserveBtn.disabled = true;
+
+  setTimeout(() => {
+    let timeLeft = RESERVATION_TIME;
+    const slot = selectedSlot;
+    selectedSlot = null;
+
+    // Save user reservation in sessionStorage
+    sessionStorage.setItem(userKey, slot.dataset.slotNumber);
+
+    // Mark slot as reserved
+    slot.dataset.status = "reserved";
+    slot.classList.add("reserved");
+    slot.classList.remove("selected");
+
+    updateCounts();
+
+    loading.classList.add("hidden");
+    reserveBtn.disabled = false;
+
+    // Start countdown timer
+    const timer = setInterval(() => {
+      const min = Math.floor(timeLeft / 60);
+      const sec = timeLeft % 60;
+
+      slot.innerHTML = `
+        <div class="reserved-label">RESERVED</div>
+        <div class="timer-text">${min}:${sec.toString().padStart(2, "0")}</div>
+      `;
+
+      timeLeft--;
+
+      if (timeLeft < 0) {
+        clearInterval(timer);
+
+        // Free user and slot after timer ends
+        sessionStorage.removeItem(userKey);
+
+        slot.dataset.status = "available";
+        slot.classList.remove("reserved");
+        slot.innerText = slot.dataset.slotNumber;
+
+        updateCounts();
+      }
+    }, 1000);
+
+  }, 1200); // simulate backend delay
+}
+
+
+// -----------------------------
+// LOGOUT
+// -----------------------------
+function logout() {
+  localStorage.clear();
+  window.location.href = "index.html";
+}
