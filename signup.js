@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // =====================
 // SIGNUP FUNCTION
 // =====================
-function signup() {
+async function signup() {
   const form = document.getElementById("signup-form");
   const errorMsg = document.getElementById("error-msg");
   const email = document.getElementById("email")?.value.trim() || "";
@@ -46,25 +46,45 @@ function signup() {
       return;
     }
   }
+  // =====================
+// API CALL - REGISTER
+// =====================
+try {
+  const response = await fetch("http://localhost:5006/auth/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: email,
+      password: password,
+      role: role,
+      userid: role === "staff" ? userid : null,
+    }),
+  });
 
-  // Messages
-  if (role === "staff") {
-    alert("Staff verified. Signup successful!");
-  } else {
-    alert("Student signup successful!");
+  const data = await response.json();
+
+  if (!response.ok) {
+    errorMsg.textContent = data.message || "Signup failed.";
+    return;
   }
 
-  // Save in localStorage
-  localStorage.setItem("email", email);
-  localStorage.setItem("password", password);
-  localStorage.setItem("role", role);
-  localStorage.setItem("userid", userId);
+  alert("Signup successful!");
 
-  localStorage.setItem(
-    "loggedInUser",
-    JSON.stringify({ role: role, id: userId })
-  );
+  // optional: save backend response
+  localStorage.setItem("loggedInUser", JSON.stringify(data.user));
 
-  // Redirect
   window.location.href = "index.html";
+
+} catch (error) {
+  console.error(error);
+  errorMsg.textContent = "Server error. Please try again later.";
+}
+
+
+  
+
+  
+  
 }

@@ -1,7 +1,6 @@
 console.log("slots.js loaded");
 const storage = sessionStorage;
 
-
 // -----------------------------
 // CURRENT USER
 // -----------------------------
@@ -59,6 +58,35 @@ for (let i = 1; i <= totalSlots; i++) {
 }
 
 // -----------------------------
+// FETCH SLOTS STATUS
+// -----------------------------
+function fetchSlotStatus() {
+  fetch("http://localhost:5006/auth/slots_status")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach(s => {
+        const slotEl = document.querySelector(`.slot[data-slot-number="${s.slot}"]`);
+        if (slotEl) {
+          if (s.status === "reserved") {
+            slotEl.dataset.status = "reserved";
+            slotEl.classList.add("reserved");
+            slotEl.innerText = "RESERVED";
+          } else {
+            slotEl.dataset.status = "available";
+            slotEl.classList.remove("reserved");
+            slotEl.innerText = s.slot;
+          }
+        }
+      });
+      updateCounts();
+    })
+    .catch(err => console.error("Slot status error:", err));
+}
+
+// Call on page load
+window.addEventListener("DOMContentLoaded", fetchSlotStatus);
+
+// -----------------------------
 // UPDATE COUNTS
 // -----------------------------
 function updateCounts() {
@@ -89,26 +117,21 @@ updateCounts();
 // RESERVE SLOT
 // -----------------------------
 function reserveSelectedSlot() {
-
-  // Only staff can reserve
   if (currentUser.role !== "staff") {
     alert("Only staff can reserve slots");
     return;
   }
 
-  // Check if user already reserved a slot this session
   if (sessionStorage.getItem(userKey)) {
     alert("You already reserved one slot this session");
     return;
   }
 
-  // Check if a slot is selected
   if (!selectedSlot) {
     alert("Select a slot first");
     return;
   }
 
-  // SHOW LOADING
   loading.classList.remove("hidden");
   reserveBtn.disabled = true;
 
@@ -117,20 +140,47 @@ function reserveSelectedSlot() {
     const slot = selectedSlot;
     selectedSlot = null;
 
-    // Save user reservation in sessionStorage
-    sessionStorage.setItem(userKey, slot.dataset.slotNumber);
+    // -----------------------------
+    // CALL RESERVE-SLOT API
+    // -----------------------------
+    fetch("http://localhost:5006/auth/reserve-slot", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify({
+        slot: slot.dataset.slotNumber
+      })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          sessionStorage.setItem(userKey, slot.dataset.slotNumber);
+          slot.dataset.status = "reserved";
+          slot.classList.add("reserved");
+          slot.classList.remove("selected");
 
-    // Mark slot as reserved
-    slot.dataset.status = "reserved";
-    slot.classList.add("reserved");
-    slot.classList.remove("selected");
+          updateCounts();
+        } else {
+          alert(data.error || "Slot already reserved");
+        }
+
+        loading.classList.add("hidden");
+        reserveBtn.disabled = false;
+      })
+      .catch(err => {
+        console.error(err);
+        loading.classList.add("hidden");
+        reserveBtn.disabled = false;
+      });
+
+    setInterval(fetchSlotStatus, 5000); // refresh every 5 sec
 
     updateCounts();
-
     loading.classList.add("hidden");
     reserveBtn.disabled = false;
 
-    // Start countdown timer
     const timer = setInterval(() => {
       const min = Math.floor(timeLeft / 60);
       const sec = timeLeft % 60;
@@ -144,8 +194,6 @@ function reserveSelectedSlot() {
 
       if (timeLeft < 0) {
         clearInterval(timer);
-
-        // Free user and slot after timer ends
         sessionStorage.removeItem(userKey);
 
         slot.dataset.status = "available";
@@ -155,10 +203,53 @@ function reserveSelectedSlot() {
         updateCounts();
       }
     }, 1000);
-
-  }, 1200); // simulate backend delay
+  }, 1200);
 }
 
+// -----------------------------
+// HARDWARE INTEGRATION
+// -----------------------------
+
+// Fetch hardware reserve signals every 5 seconds
+async function getReserveSignal() {
+  try {
+    const res = await fetch("http://localhost:5006/hardware/reserve-signal");
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data.message || "Failed to fetch reserve signals");
+      return;
+    }
+
+    console.log("Hardware reserve signals:", data);
+    // Optional: you can highlight slots if hardware reserved
+  } catch (err) {
+    console.error("Reserve signal error:", err);
+  }
+}
+setInterval(getReserveSignal, 5000);
+window.addEventListener("DOMContentLoaded", getReserveSignal);
+
+// Send sensor updates (call this wherever sensor data is available)
+async function sendSensorUpdate(sensorData) {
+  try {
+    const res = await fetch("http://localhost:5006/hardware/sensor-update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(sensorData)
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data.message || "Failed sensor update");
+      return;
+    }
+
+    console.log("Sensor updated:", data);
+  } catch (err) {
+    console.error("Sensor update error:", err);
+  }
+}
 
 // -----------------------------
 // LOGOUT

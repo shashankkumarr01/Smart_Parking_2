@@ -6,39 +6,34 @@
 
   <!-- CSS -->
   <style>
-    
     body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(-45deg, #74ebd5, #acb6e5, #ff9a9e, #fad0c4);
-  background-size: 400% 400%;
-  animation: gradientBG 10s ease infinite;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+      font-family: Arial, sans-serif;
+      background: linear-gradient(-45deg, #74ebd5, #acb6e5, #ff9a9e, #fad0c4);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.container {
-  background-color: rgb(255, 255, 255/ 0.005); /* lower opacity */
-  padding: 40px; /* reduced padding = less height */
-  border-radius: 10px;
-  width: 700px;
-  max-height: 1000px; /* control height */
-  box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
-  text-align: center;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-    
-    .container button:hover {
-  color: #a0459e;
-}
+    .container {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 10px;
+      width: 700px;
+      max-height: 1000px;
+      box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
 
     .container h1 {
       margin-bottom: 20px;
@@ -71,65 +66,83 @@
     }
 
     .login-link {
-  display: block;
-  margin-top: 15px;     /* space below button */
-  font-size: 24px;      /* smaller text */
-  text-align: center;
-  text-decoration: none;
-  color: #e96ed2;
-}
+      display: block;
+      margin-top: 15px;
+      font-size: 24px;
+      text-align: center;
+      text-decoration: none;
+      color: #e96ed2;
+    }
 
-.login-link:hover {
-  text-decoration: underline;
-}
-body {
-  background-image: url("gce.jpeg");  /* path to your image */
-  background-size: cover;       /* fills screen */
-  background-position: center;  
-  background-repeat: no-repeat;
-  background-attachment: fixed; /* optional */
+    .login-link:hover {
+      text-decoration: underline;
+    }
 
-  animation: gradientBG 70s ease infinite;
-}
     #msg {
       margin-top: 15px;
-      font-size: 14px;
+      font-size: 16px;
       color: green;
     }
 
     .error {
       color: red;
     }
+
+    .success {
+      color: green;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- HTML -->
   <div class="container">
     <h1>Forgot Password</h1>
-
-    <input type="email" id="resetEmail" placeholder="Enter your email">
-    <br>
-    <button onclick="resetPassword()">Reset Password</button><br>
-    <br>
+    <input type="email" id="resetEmail" placeholder="Enter your email"><br>
+    <button onclick="resetPassword()">Reset Password</button><br><br>
     <a href="index.html" class="login-link">Login here</a>
-
     <p id="msg"></p>
   </div>
 
   <!-- JavaScript -->
   <script>
-    function resetPassword() {
-      const email = document.getElementById("resetEmail").value;
+    async function resetPassword() {
+      const email = document.getElementById("resetEmail").value.trim();
       const msg = document.getElementById("msg");
 
-      if (email === "") {
+      // Clear previous messages
+      msg.innerText = "";
+      msg.className = "";
+
+      // Validation
+      if (!email) {
         msg.innerText = "Please enter your email";
         msg.className = "error";
-      } else {
-        msg.innerText = "Password reset link sent to " + email;
-        msg.className = "";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5006/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          msg.innerText = data.message || "Failed to send reset link";
+          msg.className = "error";
+          return;
+        }
+
+        msg.innerText = data.message || "Password reset link sent successfully!";
+        msg.className = "success";
+
+      } catch (error) {
+        console.error(error);
+        msg.innerText = "Server error. Please try again later.";
+        msg.className = "error";
       }
     }
   </script>
